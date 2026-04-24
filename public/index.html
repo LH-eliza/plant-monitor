@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strawberry Watch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #e8382a;
+      --red-light: #fde8e6;
+      --red-mid: #f5a09a;
+      --green: #3a7d44;
+      --green-light: #e8f5ea;
+      --green-mid: #7dbf87;
+      --cream: #fdf6ee;
+      --brown: #6b3a2a;
+      --text: #2a1810;
+      --muted: #9a7060;
+      --card: #ffffff;
+      --border: rgba(107,58,42,0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      background-image: radial-gradient(circle at 20% 20%, rgba(232,56,42,0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(58,125,68,0.06) 0%, transparent 50%);
+    }
+
+    header {
+      padding: 2.5rem 2rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-left h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 2.8rem;
+      font-weight: 600;
+      color: var(--red);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .header-left p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-weight: 500;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-light);
+      color: var(--green);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(58,125,68,0.2);
+      margin-top: 0.5rem;
+    }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    main {
+      padding: 0 2rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-areas:
+        "hero hero photo"
+        "chart chart photo"
+        "journal journal journal";
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.3s; }
+
+    /* Hero moisture card */
+    .hero-card {
+      grid-area: hero;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      background: linear-gradient(135deg, #fff 60%, var(--red-light));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '🍓';
+      position: absolute;
+      right: -10px;
+      top: -20px;
+      font-size: 120px;
+      opacity: 0.08;
+      transform: rotate(-15deg);
+    }
+
+    .moisture-ring {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      flex-shrink: 0;
+    }
+
+    .moisture-ring svg {
+      transform: rotate(-90deg);
+      width: 130px;
+      height: 130px;
+    }
+
+    .moisture-ring .track {
+      fill: none;
+      stroke: var(--red-light);
+      stroke-width: 10;
+    }
+
+    .moisture-ring .fill {
+      fill: none;
+      stroke: var(--red);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 339.3;
+      stroke-dashoffset: 339.3;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .moisture-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .moisture-pct {
+      font-family: 'Fraunces', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--red);
+      line-height: 1;
+    }
+
+    .moisture-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .hero-info { flex: 1; }
+
+    .hero-info h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .status-pill.wet   { background: var(--green-light); color: var(--green); }
+    .status-pill.ok    { background: #fff8e6; color: #b07800; }
+    .status-pill.dry   { background: var(--red-light); color: var(--red); }
+
+    .stat-row {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .stat-item label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .stat-item span {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Photo card */
+    .photo-card {
+      grid-area: photo;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.25rem;
+    }
+
+    .photo-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .photo-upload-area {
+      flex: 1;
+      border: 2px dashed var(--red-mid);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+      min-height: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-upload-area:hover { background: var(--red-light); }
+
+    .photo-upload-area img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .photo-upload-area .upload-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+    }
+
+    .photo-upload-area .upload-icon {
+      font-size: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    #photo-input { display: none; }
+
+    .photo-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Chart card */
+    .chart-card {
+      grid-area: chart;
+    }
+
+    .chart-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .chart-wrap {
+      height: 160px;
+      position: relative;
+    }
+
+    canvas { width: 100% !important; }
+
+    /* Journal card */
+    .journal-card {
+      grid-area: journal;
+    }
+
+    .journal-card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .journal-input-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .journal-input-row input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text);
+      background: var(--cream);
+      outline: none;
+    }
+
+    .journal-input-row input:focus {
+      border-color: var(--red-mid);
+    }
+
+    .journal-input-row button {
+      padding: 10px 18px;
+      background: var(--red);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .journal-input-row button:hover { opacity: 0.85; }
+
+    .journal-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .journal-entry {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .entry-icon { font-size: 1rem; flex-shrink: 0; }
+
+    .entry-body { flex: 1; }
+
+    .entry-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .entry-date {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .alert-banner {
+      background: var(--red-light);
+      border: 1px solid var(--red-mid);
+      border-radius: 14px;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--red);
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .last-update {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-areas: "hero" "photo" "chart" "journal";
+        padding: 0 1rem 2rem;
+      }
+      header { padding: 1.5rem 1rem 0.5rem; }
+      .hero-card { flex-direction: column; text-align: center; }
+      .stat-row { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>🍓 Strawberry Watch</h1>
+    <p>Real-time plant monitor — powered by ESP32</p>
+  </div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    Live
+  </div>
+</header>
+
+<main>
+
+  <div id="alert-area"></div>
+
+  <!-- Hero moisture card -->
+  <div class="card hero-card">
+    <div class="moisture-ring">
+      <svg viewBox="0 0 120 120">
+        <circle class="track" cx="60" cy="60" r="54"/>
+        <circle class="fill" id="ring-fill" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="moisture-center">
+        <div class="moisture-pct" id="moisture-pct">--%</div>
+        <div class="moisture-label">moisture</div>
+      </div>
+    </div>
+    <div class="hero-info">
+      <h2 id="plant-name">My Strawberry</h2>
+      <div class="status-pill ok" id="status-pill">Loading...</div>
+      <div class="stat-row">
+        <div class="stat-item">
+          <label>Last watered</label>
+          <span id="last-watered">--</span>
+        </div>
+        <div class="stat-item">
+          <label>Readings today</label>
+          <span id="readings-today">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart card -->
+  <div class="card chart-card">
+    <h3>Moisture history</h3>
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+    <div class="last-update" id="last-update">Waiting for data...</div>
+  </div>
+
+  <!-- Photo card -->
+  <div class="card photo-card">
+    <h3>Plant photo</h3>
+    <div class="photo-upload-area" id="drop-zone" onclick="document.getElementById('photo-input').click()">
+      <div class="upload-icon">📸</div>
+      <div class="upload-hint">Click to add a photo<br>of your strawberry plant</div>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(event)">
+    <div class="photo-meta" id="photo-meta">No photo yet</div>
+  </div>
+
+  <!-- Journal card -->
+  <div class="card journal-card">
+    <h3>Growth journal</h3>
+    <div class="journal-input-row">
+      <input type="text" id="journal-input" placeholder="e.g. First flower spotted! Added fertilizer..." maxlength="200">
+      <button onclick="addEntry()">Add note</button>
+    </div>
+    <div class="journal-entries" id="journal-entries">
+      <div class="journal-entry">
+        <div class="entry-icon">🌱</div>
+        <div class="entry-body">
+          <div class="entry-text">Plant monitoring started!</div>
+          <div class="entry-date">Today</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+  // Journal stored in memory
+  const journal = [{ icon: '🌱', text: 'Plant monitoring started!', date: 'Today' }];
+
+  // Photo stored in memory
+  let photoDataUrl = localStorage.getItem('plant_photo') || null;
+  if (photoDataUrl) showPhoto(photoDataUrl);
+
+  // Chart setup
+  const ctx = document.getElementById('chart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Moisture %',
+        data: [],
+        borderColor: '#e8382a',
+        backgroundColor: 'rgba(232,56,42,0.08)',
+        borderWidth: 2,
+        pointBackgroundColor: '#e8382a',
+        pointRadius: 3,
+        tension: 0.4,
+        fill: true,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#9a7060' },
+          grid: { color: 'rgba(107,58,42,0.06)' }
+        },
+        x: {
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#9a7060', maxTicksLimit: 8 },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+
+  // Fetch live data
+  async function refresh() {
+    try {
+      const [plantRes, histRes] = await Promise.all([
+        fetch('/api/plants'),
+        fetch('/api/plants/plant_1/history')
+      ]);
+      const plants = await plantRes.json();
+      const history = await histRes.json();
+
+      if (plants.length) {
+        const p = plants[0];
+        const m = p.moisture;
+
+        // Ring
+        const circumference = 339.3;
+        const offset = circumference - (m / 100) * circumference;
+        document.getElementById('ring-fill').style.strokeDashoffset = offset;
+        document.getElementById('moisture-pct').textContent = m + '%';
+
+        // Ring color
+        const fillEl = document.getElementById('ring-fill');
+        if (m < 30) fillEl.style.stroke = '#e8382a';
+        else if (m < 60) fillEl.style.stroke = '#f0a500';
+        else fillEl.style.stroke = '#3a7d44';
+
+        // Status pill
+        const pill = document.getElementById('status-pill');
+        if (m < 30) {
+          pill.textContent = '🚨 Needs water now';
+          pill.className = 'status-pill dry';
+          document.getElementById('alert-area').innerHTML =
+            '<div class="alert-banner">💧 Your strawberry is thirsty! Moisture is at ' + m + '% — time to water.</div>';
+        } else if (m < 60) {
+          pill.textContent = '⚠️ Getting dry';
+          pill.className = 'status-pill ok';
+          document.getElementById('alert-area').innerHTML = '';
+        } else {
+          pill.textContent = '✅ Happy & hydrated';
+          pill.className = 'status-pill wet';
+          document.getElementById('alert-area').innerHTML = '';
+        }
+
+        document.getElementById('plant-name').textContent = p.plant_name;
+        document.getElementById('last-update').textContent =
+          'Last reading: ' + new Date(p.last_seen).toLocaleTimeString();
+        document.getElementById('readings-today').textContent = history.length;
+      }
+
+      // Chart
+      if (history.length) {
+        chart.data.labels = history.map(r =>
+          new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        );
+        chart.data.datasets[0].data = history.map(r => r.moisture);
+        chart.update();
+      }
+
+    } catch(e) {
+      document.getElementById('last-update').textContent = 'Could not reach server';
+    }
+  }
+
+  // Photo
+  function handlePhoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      localStorage.setItem('plant_photo', ev.target.result);
+      showPhoto(ev.target.result);
+      document.getElementById('photo-meta').textContent =
+        'Photo taken ' + new Date().toLocaleDateString();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showPhoto(src) {
+    const zone = document.getElementById('drop-zone');
+    zone.querySelector('.upload-icon').style.display = 'none';
+    zone.querySelector('.upload-hint').style.display = 'none';
+    const img = document.createElement('img');
+    img.src = src;
+    zone.appendChild(img);
+  }
+
+  // Journal
+  function addEntry() {
+    const input = document.getElementById('journal-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const entry = {
+      icon: '📝',
+      text,
+      date: new Date().toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    };
+    journal.unshift(entry);
+    renderJournal();
+    input.value = '';
+  }
+
+  document.getElementById('journal-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addEntry();
+  });
+
+  function renderJournal() {
+    const icons = ['🍓','🌸','💧','🌿','☀️','📝','🌱'];
+    document.getElementById('journal-entries').innerHTML = journal.map(e => `
+      <div class="journal-entry">
+        <div class="entry-icon">${e.icon}</div>
+        <div class="entry-body">
+          <div class="entry-text">${e.text}</div>
+          <div class="entry-date">${e.date}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  refresh();
+  setInterval(refresh, 10000);
+</script>
+</body>
+</html>
