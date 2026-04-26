@@ -91,7 +91,7 @@ Example response:
 ### `GET /api/plants/:id/history`
 Returns the last 50 readings for a plant, ordered oldest to newest.
 
-## Dashboard Behavior
+## Dashboard Behaviour
 
 - Polls every 10 seconds for latest data
 - Uses moisture thresholds:
@@ -103,18 +103,4 @@ Returns the last 50 readings for a plant, ordered oldest to newest.
   - status badge + alert banner
   - line chart history
 
-## Development Notes
-
-- Database table (`readings`) is auto-created at startup.
-- The server hosts static files from `public/`.
-- The default frontend currently fetches history for `plant_1`.
-
-## .gitignore
-
-This repo includes a `.gitignore` configured for:
-- `node_modules`
-- logs
-- local env files
-- SQLite/local DB files
-- common OS/editor artifacts
 
